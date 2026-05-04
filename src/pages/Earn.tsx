@@ -62,7 +62,9 @@ export default function Earn() {
     setClaim(null);
 
     try {
-      if (!token) {
+      const currentToken = getStoredToken();
+
+      if (!currentToken) {
         await refreshAuth();
       }
 

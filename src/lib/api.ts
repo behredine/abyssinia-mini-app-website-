@@ -71,6 +71,10 @@ export function onUnauthorized(handler: () => Promise<void>) {
   unauthorizedHandler = handler;
 }
 
+export function getApiBaseUrl() {
+  return API_BASE_URL;
+}
+
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { auth = true, retryOnUnauthorized = true, headers, ...init } = options;
   const requestHeaders = new Headers(headers);
@@ -96,7 +100,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     });
   } catch (caught) {
     if (caught instanceof TypeError) {
-      throw new Error("Could not reach the backend. Check the API URL, CORS settings, or Railway service status.");
+      throw new Error(`Could not reach the backend at ${API_BASE_URL}. Open ${API_BASE_URL}/health in a browser and confirm it returns JSON.`);
     }
 
     throw caught;
