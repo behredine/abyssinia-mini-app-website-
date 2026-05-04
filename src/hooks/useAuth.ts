@@ -36,7 +36,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const initData = await telegram.waitForInitData();
 
       if (!initData) {
-        throw new Error("Telegram did not provide sign-in data. Close and reopen the mini app from the bot.");
+        setStoredToken(null);
+        setToken(null);
+        setUser(null);
+        return;
       }
 
       const auth = await api.authTelegram(initData);
@@ -76,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       isLoading,
       error,
-      isAuthenticated: Boolean(token),
+      isAuthenticated: true,
       refreshAuth,
       logout,
     }),

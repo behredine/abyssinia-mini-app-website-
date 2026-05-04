@@ -4,7 +4,7 @@ import { api, type Wallet } from "../lib/api";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { token, user } = useAuth();
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +25,7 @@ export default function Dashboard() {
         <div>
           <span className="eyebrow">Welcome back</span>
           <h2>{displayName}</h2>
-          <p>Premium rewards, verified through your Telegram session.</p>
+          <p>{token ? "Premium rewards, verified through your Telegram session." : "Premium rewards ready when your session is available."}</p>
         </div>
         <div className="coin-orbit">
           <Sparkles size={26} />
@@ -49,7 +49,7 @@ export default function Dashboard() {
         <ShieldCheck size={22} />
         <div>
           <strong>Secure session active</strong>
-          <p>Protected requests use your Telegram-backed token.</p>
+          <p>{token ? "Protected requests use your Telegram-backed token." : "Open from the bot menu to sync your protected balance."}</p>
         </div>
         {isLoading && <RefreshCw className="spin" size={18} />}
       </section>

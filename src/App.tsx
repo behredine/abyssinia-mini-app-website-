@@ -9,7 +9,7 @@ import Wallet from "./pages/Wallet";
 import Withdraw from "./pages/Withdraw";
 
 function AuthGate({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, error, refreshAuth } = useAuth();
+  const { isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -17,19 +17,6 @@ function AuthGate({ children }: { children: React.ReactNode }) {
         <div className="brand-mark">R</div>
         <p className="muted">Securing your session...</p>
         <div className="loader" />
-      </main>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <main className="app-shell centered">
-        <div className="brand-mark">R</div>
-        <h1>Telegram sign-in needed</h1>
-        <p className="muted">{error ?? "Your secure rewards session could not be started."}</p>
-        <button className="primary-button" onClick={refreshAuth}>
-          Try again
-        </button>
       </main>
     );
   }

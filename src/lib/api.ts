@@ -95,6 +95,12 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   if (response.status === 401 && retryOnUnauthorized) {
     setStoredToken(null);
     await unauthorizedHandler?.();
+
+    if (!memoryToken) {
+      const error = await readError(response);
+      throw new Error(error || "Session is not authorized");
+    }
+
     return request<T>(path, { ...options, retryOnUnauthorized: false });
   }
 
