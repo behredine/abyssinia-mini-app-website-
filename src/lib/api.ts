@@ -87,10 +87,20 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     requestHeaders.set("Authorization", `Bearer ${memoryToken}`);
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: requestHeaders,
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers: requestHeaders,
+    });
+  } catch (caught) {
+    if (caught instanceof TypeError) {
+      throw new Error("Could not reach the backend. Check the API URL, CORS settings, or Railway service status.");
+    }
+
+    throw caught;
+  }
 
   if (response.status === 401 && retryOnUnauthorized) {
     setStoredToken(null);

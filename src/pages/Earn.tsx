@@ -1,7 +1,8 @@
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { BadgeCheck, Clapperboard, Crown, ExternalLink, Loader2 } from "lucide-react";
-import { api, type EarnSource, type EarnStartResponse } from "../lib/api";
+import { api, getStoredToken, type EarnSource, type EarnStartResponse } from "../lib/api";
+import { useAuth } from "../hooks/useAuth";
 import { telegram } from "../lib/telegram";
 
 type EarnCard = {
@@ -27,6 +28,7 @@ const EARN_CARDS: EarnCard[] = [
 ];
 
 export default function Earn() {
+  const { token, refreshAuth } = useAuth();
   const [activeSource, setActiveSource] = useState<EarnSource | null>(null);
   const [claim, setClaim] = useState<EarnStartResponse | null>(null);
   const [availableSources, setAvailableSources] = useState<Set<EarnSource>>(new Set(EARN_CARDS.map((card) => card.source)));
@@ -60,6 +62,14 @@ export default function Earn() {
     setClaim(null);
 
     try {
+      if (!token) {
+        await refreshAuth();
+      }
+
+      if (!getStoredToken()) {
+        throw new Error("Your session is not connected yet. Reopen this Mini App from the bot menu, then try Watch Ads again.");
+      }
+
       const response = await api.startEarn(source);
       setClaim(response);
       telegram.openExternal(response.openUrl);
