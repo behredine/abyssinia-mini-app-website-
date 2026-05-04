@@ -32,10 +32,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
 
     try {
-      const initData = telegram.getInitData();
+      telegram.boot();
+      const initData = await telegram.waitForInitData();
 
       if (!initData) {
-        throw new Error("Open this app from Telegram to sign in.");
+        throw new Error("Telegram did not provide sign-in data. Close and reopen the mini app from the bot.");
       }
 
       const auth = await api.authTelegram(initData);

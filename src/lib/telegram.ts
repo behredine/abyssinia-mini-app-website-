@@ -37,7 +37,23 @@ export const telegram = {
   },
 
   getInitData() {
-    return window.Telegram?.WebApp?.initData ?? "";
+    return window.Telegram?.WebApp?.initData || getLaunchParamInitData();
+  },
+
+  async waitForInitData(timeoutMs = 2200) {
+    const startedAt = Date.now();
+
+    while (Date.now() - startedAt < timeoutMs) {
+      const initData = telegram.getInitData();
+
+      if (initData) {
+        return initData;
+      }
+
+      await new Promise((resolve) => window.setTimeout(resolve, 100));
+    }
+
+    return telegram.getInitData();
   },
 
   boot() {
@@ -65,3 +81,20 @@ export const telegram = {
     window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred("error");
   },
 };
+
+function getLaunchParamInitData() {
+  const sources = [window.location.hash, window.location.search]
+    .filter(Boolean)
+    .map((value) => (value.startsWith("#") || value.startsWith("?") ? value.slice(1) : value));
+
+  for (const source of sources) {
+    const params = new URLSearchParams(source);
+    const initData = params.get("tgWebAppData");
+
+    if (initData) {
+      return initData;
+    }
+  }
+
+  return "";
+}
